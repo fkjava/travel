@@ -1,5 +1,6 @@
 package org.fkjava.travel.front.action;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.fkjava.travel.core.domain.Product;
 import org.fkjava.travel.core.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("front/product")
+@JsonIgnoreProperties("type.children")
 public class ProductController {
 
     @Autowired

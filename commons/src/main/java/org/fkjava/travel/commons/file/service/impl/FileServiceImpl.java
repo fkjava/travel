@@ -1,7 +1,10 @@
 package org.fkjava.travel.commons.file.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +60,7 @@ public class FileServiceImpl implements FileService {
         info.setContentType(file.getContentType());// 文件的内容类型
         info.setFileLength(file.getSize());// 文件大小
         info.setName(file.getOriginalFilename());// 原始文件名
-        info.setPath(dest.getAbsolutePath());// 文件实际存储的位置
+        info.setPath(newFileName);// 文件实际存储的位置
 
         try {
             FileInfo i = dao.save(info);
@@ -83,5 +86,12 @@ public class FileServiceImpl implements FileService {
         file.delete();
         // 3.删除数据库里面的FileInfo
         this.dao.delete(info);
+    }
+
+    @Override
+    public InputStream getFileContent(FileInfo info) throws FileNotFoundException {
+        File file = new File(this.fileDir, info.getPath());
+        FileInputStream in = new FileInputStream(file);
+        return in;
     }
 }

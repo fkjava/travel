@@ -1,14 +1,15 @@
 package org.fkjava.travel.commons.file.action;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import org.apache.commons.io.IOUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 // 把包增加到 file-servlet.xml 文件进行扫描
 @Controller
@@ -111,8 +113,63 @@ public class FileController {
     }
 
     // SpringMVC可以把路径的一部分当做参数使用！
+//    @RequestMapping(value = "/{xx}", method = RequestMethod.GET)
+//    public ResponseEntity<byte[]> download(//
+//            @PathVariable("xx") String id, // 文件id
+//            @RequestHeader("User-Agent") String userAgent// 浏览器版本
+//    ) throws UnsupportedEncodingException {
+//        // 根据文件的id获取文件信息，里面包括文件大小、中文文件名、文件的内容类型
+//        FileInfo info = this.fileService.getById(id);
+//
+//        if (info == null) {
+//            // 404
+//            log.error("无法根据路径找到对应的文件信息");
+//            return ResponseEntity.notFound().build();
+//        } else {
+//            // 构建响应消息
+//            // ok() 其实就是 HTTP 200 响应
+//            BodyBuilder builder = ResponseEntity.ok();
+//            builder.contentLength(info.getFileLength());// 内容长度
+//            builder.contentType(//
+//                    MediaType.parseMediaType(info.getContentType())// 内容类型
+//            );
+//            // 获得实际的文件名，实际的开发中需要根据不同的浏览器来进行判断做不同的编码
+//            // 实际的浏览器类型可以通过请求头来获取
+//            String name = info.getName();
+//            name = URLEncoder.encode(name, "UTF-8");
+//            // 设置实际的响应文件名，告诉浏览器文件要用于【下载】、【保存】
+//            // 不同的浏览器，处理方式不同，要根据浏览器版本进行区别判断
+//            if (userAgent.indexOf("MSIE") > 0) {
+//                // 如果是IE，只需要用UTF-8字符集进行URL编码即可
+//                builder.header("Content-Disposition", "attachment; filename=" + name);
+//            } else {
+//                // 而Google、FireFox、Chrome等浏览器，则需要说明编码的字符集
+//                // 注意filename后面有个*号，在UTF-8后面有两个单引号！
+//                builder.header("Content-Disposition", "attachment; filename*=UTF-8''" + name);
+//            }
+//
+//            // 根据实际的文件路径得到文件，并且转换为byte[]
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            try (InputStream in = this.fileService.getFileContent(info)) {
+//                // 把输入流里面的信息，读取出来转换为byte[]
+//                byte[] buf = new byte[1024];
+//                for (int count = in.read(buf); count != -1; count = in.read(buf)) {
+//                    out.write(buf, 0, count);
+//                }
+//                byte[] data = out.toByteArray();
+//
+//                // 构建响应体
+//                ResponseEntity<byte[]> entity = builder.body(data);
+//                return entity;
+//            } catch (IOException e) {
+//                log.error("找到了对应的文件信息，但是读取文件内容失败：" + e.getLocalizedMessage(), e);
+//                // 文件没有找到，或者读取失败
+//                return ResponseEntity.notFound().build();
+//            }
+//        }
+//    }
     @RequestMapping(value = "/{xx}", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> download(//
+    public ResponseEntity<StreamingResponseBody> download(//
             @PathVariable("xx") String id, // 文件id
             @RequestHeader("User-Agent") String userAgent// 浏览器版本
     ) throws UnsupportedEncodingException {
@@ -146,18 +203,13 @@ public class FileController {
                 builder.header("Content-Disposition", "attachment; filename*=UTF-8''" + name);
             }
 
-            // 根据实际的文件路径得到文件，并且转换为byte[]
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            try ( FileInputStream in = new FileInputStream(info.getPath())) {
-                // 把输入流里面的信息，读取出来转换为byte[]
-                byte[] buf = new byte[1024];
-                for (int count = in.read(buf); count != -1; count = in.read(buf)) {
-                    out.write(buf, 0, count);
-                }
-                byte[] data = out.toByteArray();
-
-                // 构建响应体
-                ResponseEntity<byte[]> entity = builder.body(data);
+            try {
+                InputStream in = this.fileService.getFileContent(info);// 构建响应体
+                ResponseEntity<StreamingResponseBody> entity = builder.body((out) -> {
+                    try (InputStream i = in) {
+                        IOUtils.copy(i, out);
+                    }
+                });
                 return entity;
             } catch (IOException e) {
                 log.error("找到了对应的文件信息，但是读取文件内容失败：" + e.getLocalizedMessage(), e);
