@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <title>疯狂旅游文件管理服务</title>
+        <script type="text/javascript" th:src="@{/resources/webjars/jquery/1.11.1/jquery.min.js}"></script>
+
+    </head>
+    <body>
+        <!-- 如果没有写action，则默认提交到和当前页面相同的位置 -->
+        <!-- 如果访问list.jsp的url为 /cloud/file ，那么提交的时候也是 /cloud/file -->
+        <form th:action="@{/commons/file}" method="post" enctype="multipart/form-data">
+            请选择要上传的文件<input type="file" name="imgFile"/>
+            <button type="submit">上传</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>文件名</th>
+                    <th>文件大小</th>
+                    <th>文件类型</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="fi:${list}">
+                    <td th:text="${fi.name }"></td>
+                    <td th:text="${fi.fileLength }"></td>
+                    <td th:text="${fi.contentType }"></td>
+                    <td>
+                        <a th:href="@{/commons/file/{id}(id=${fi.id })}">下载</a>
+                        分享
+                        <a class="deleteLink" th:href="@{/commons/file/{id}(id=${fi.id })}">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- 	<form id="deleteForm" action="" method="post"> -->
+        <!-- 		<input type="hidden" name="_method" value="DELETE"/> -->
+        <!-- 	</form> -->
+        <script type="text/javascript">
+            $(".deleteLink").click(function (event) {
+                event.preventDefault();
+                if (confirm("确定要删除吗？")) {
+                    var href = $(this).attr("href");
+                    deleteFile(href);
+                }
+            });
+
+            var deleteFile = function (u) {
+
+
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                });
+
+                $.ajax({
+                    url: u,
+                    method: "delete", //通过jQuery发送DELETE请求
+                    success: function (xx) {
+                        console.info(xx);
+                        var url = "[[@{/commons/file}]]";
+                        document.location.href = url;
+                    },
+                    error: function (yy) {
+                        console.error(yy);
+                    }
+                });
+            };
+        </script>
+    </body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>疯狂旅游</title>
+        <link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
+        <script type="text/javascript" th:src="@{/resources/webjars/jquery/1.11.1/jquery.min.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+        <style>
+            .carousel
+            {
+                top: 10px;
+                height: 200px;
+            }
+
+        </style>
+    </head>
+    <body class="container-fluid">
+        <!-- 横幅 -->
+        <div>
+            <!-- 顶部工具按钮 -->
+            <div style="width: 95%; background-color: #f8f8f8; height: 29px;">
+                <div style="float: left; margin-left: 50px;">
+                    <th:block th:if="${session.SPRING_SECURITY_CONTEXT} != null and ${session.SPRING_SECURITY_CONTEXT.authentication.principal} != null">
+                        <span th:text="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}">
+                        </span>
+                        <form th:action="@{/security/logout}" method="post" style="display: inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <a style="cursor: pointer;" onclick="this.parentNode.submit()">退出登录</a>
+                        </form>
+                    </th:block>
+                    <span th:if="${session.SPRING_SECURITY_CONTEXT} == null or ${session.SPRING_SECURITY_CONTEXT.authentication.principal} == null">
+                        <a th:href="@{/security/login}">登录</a> |
+                        <a th:href="@{/security/register}">注册</a>
+                    </span>
+                </div>
+                <div style="float: right;">
+                    <span>疯狂商旅</span>
+                    <span>旅游百货</span>
+                    <span>企业旅游</span>
+                    <span>会员俱乐部</span>
+                    <span>我的订单</span>
+                    <span>网站地图</span>
+                </div>
+            </div>
+            <div>
+                <ul class="banner">
+                    <li class="logo">
+                        <a href="http://www.fkjava.org"><img alt="疯狂软件" th:src="@{/resources/images/logo.png}"></a>
+                    </li>
+                    <li class="select-city">
+                        广州站<span class="glyphicon glyphicon-chevron-down"></span>
+                    </li>
+                    <li class="search-bar">
+                        <form>
+                            <span style="cursor: pointer;">所有产品<span class="glyphicon glyphicon-chevron-down"></span></span>
+                            <input />
+                            <button>搜索</button>
+                        </form>
+                    </li>
+                    <li class="customer-service">
+                        <span style="font-size: 15px;">
+                            <span class="glyphicon glyphicon-comment" style="color: green;"></span>
+                            微信客服<br/>
+                            <span class="glyphicon glyphicon-qrcode" style="color: green;"></span>
+                        </span>
+                        <span style="font-size: 15px;">
+                            <span class="glyphicon glyphicon-earphone" style="color: red;"></span>
+                            联系电话<br/>
+                            020-28309358
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="toolbar">
+                <ul>
+                    <li class="active">
+                        <span>首页</span>
+                    </li>
+                    <li th:each="bt:${page.bannerTypes}">
+                        <span>
+                            <a th:text="${bt.name}" th:href="@{/site/search(typeId=${bt.id})}"></a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 商品信息显示 -->
+        <div class="col-md-10">
+            <div class="col-md-12">
+                <span th:text="${p.name}"></span>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                            <th:block th:each="i,status:${p.imageIds}">
+                                <li data-target="#myCarousel" th:data-slide-to="${status.index}" th:class="${status.index eq 0} ? 'active' : ''"></li>
+                            </th:block>
+                        </ol>
+                        <div class="carousel-inner" role="listbox">
+                            <th:block th:each="i,status:${p.imageIds}">
+                                <div th:class="${status.index eq 0} ? 'item active' : 'item'">
+                                    <img class="first-slide" th:src="@{/commons/file/{fileId}(fileId=${i})}" alt="疯狂软件的优势">
+                                </div>
+                            </th:block>
+                        </div>
+                        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="sr-only">上一个</span>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="sr-only">下一个</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>

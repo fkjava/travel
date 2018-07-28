@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>疯狂旅游</title>
+        <link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
+        <script type="text/javascript" th:src="@{/resources/webjars/jquery/1.11.1/jquery.min.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+        <style>
+            ul
+            {
+                list-style: none;
+            }
+            ul li
+            {
+                display: inline-block;
+            }
+        </style>
+    </head>
+    <body class="container-fluid">
+        <div class="row">
+            <ul class="col-md-12">
+                <li><a th:href="@{/admin/productType}">产品类型管理</a></li>
+                <li><a th:href="@{/admin/product}">产品管理</a></li>
+                <li><a th:href="@{/admin/order}">订单管理</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div style="text-align: right;">
+                    <a th:href="@{/admin/product/add}" class="btn btn-xs btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>添加
+                    </a>
+                </div>
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>名称</th>
+                            <th>路线</th>
+                            <th>行程天数</th>
+                            <th>品牌</th>
+                            <th>价格</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="x:${page.content}">
+                            <td th:text="${x.type.name}"></td>
+                            <td th:text="${x.name}"></td>
+                            <td th:text="${x.travelLine}"></td>
+                            <td th:text="${x.travelDays}"></td>
+                            <td th:text="${x.trademark}"></td>
+                            <td th:text="${x.price}"></td>
+                            <td>
+                                修改
+                                删除
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a th:href="@{/admin/product(pageNumber=${page.number <= 0 ? 0 : page.number - 1})}">上一页</a>
+                <a th:href="@{/admin/product(pageNumber=${page.number < page.totalPages - 1 ? page.number + 1 : page.totalPages - 1})}">下一页</a>
+            </div>
+        </div>
+    </body>
+</html>

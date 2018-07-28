@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>疯狂旅游--登录</title>
+<link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+<link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
+<script type="text/javascript" th:src="@{/resources/webjars/jquery/1.11.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<!-- 横幅 -->
+	<div>
+        <ul class="banner">
+            <li class="logo">
+                <a href="http://www.fkjava.org"><img alt="疯狂软件" th:src="@{/resources/images/logo.png}"></a>
+            </li>
+        </ul>
+	</div>
+    <div style="background-image: url('/resources/images/bg1.jpg'); background-repeat: round; height: 545px;">
+        <div class="row">
+            <div class="col-md-offset-7 col-md-4 well" style="margin-top: 40px;">
+                <div>用户登录</div>
+                <div th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}" 
+                    th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"
+                    class="alert alert-danger">
+                </div>
+                <div>
+                    <form class="form-horizontal" method="post" th:action="@{/security/do-login}">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input class="form-control" id="loginName" name="loginName" placeholder="手机号/会员名/昵称/邮箱" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="password" class="form-control" id="inputPassword3" name="password" placeholder="密码" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-default">登录</button>
+                                没有有账号？<a th:href="@{/security/register}">注册</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

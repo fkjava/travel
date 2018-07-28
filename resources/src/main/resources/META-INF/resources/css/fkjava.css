@@ -1,0 +1,166 @@
+@charset "UTF-8";
+
+.banner .search-bar {
+    border-radius: 10px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    margin-right: 100px;
+    border: 3px solid orange;
+}
+
+.banner .search-bar form {
+    display: inline;
+}
+
+.banner .search-bar form input {
+    width: 300px;
+}
+
+.banner .search-bar * {
+    border: none;
+    background-color: white;
+}
+
+.banner li {
+    list-style: none;
+    display: inline;
+    margin-right: 10px;
+}
+
+.banner .logo img {
+    height: 80px;
+}
+
+.banner .customer-service span {
+    display: inline-block;
+}
+
+.banner .select-city {
+    cursor: pointer;
+    width: 50px;
+    padding: 5px 15px 5px 5px;
+    border: 1px solid white;
+}
+
+.banner .select-city:hover {
+    border: 1px solid black;
+}
+
+.banner .toolbar {
+
+}
+
+.toolbar {
+    background-color: #2dbb55;
+    font-size: 18px;
+    color: white;
+}
+
+.toolbar ul {
+
+}
+
+.toolbar ul li {
+    list-style: none;
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    margin-left: -5px;
+    vertical-align: middle;
+}
+
+.toolbar ul li:last-child {
+    border-right: none;
+}
+
+.toolbar ul li.active {
+    background-color: #11a13a;
+}
+
+.toolbar ul li span {
+    padding-right: 15px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toolbar ul li:last-child span {
+    border-right: none;
+}
+
+/*首屏广告*/
+.carousel {
+    margin-top: -10px;
+    height: 300px;
+    margin-bottom: 10px;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+    z-index: 10;
+}
+.carousel-caption p
+{
+    text-align: left;
+    text-indent: 20px;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+    height: 300px;
+    background-color: #777;
+}
+
+.carousel-inner>.item>img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 300px;
+}
+
+/*左侧导航*/
+.nav-tabs>li {
+    float: none;
+}
+
+.nav-tabs>li>a {
+    margin-right: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li>a:hover, .nav-tabs>li.active>a:hover,
+.nav-tabs>li.active>a:focus {
+    border-bottom-color: #ddd;
+    border-right-color: transparent;
+    border-radius: 4px 0px 0px 4px;
+}
+
+.nav-tabs>li>a:checked, .nav-tabs>li>a {
+    outline: none;
+}
+
+.nav-tabs {
+    border-bottom: none;
+    border-right: 1px solid #ddd;
+    padding-right: 0px;
+}
+
+.ad-details>div>a
+{
+    margin-right: 7px;
+    display: inline-block;
+}
+
+/*热门活动*/
+.hot-services ul {
+    list-style: none;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.hot-services ul li {
+    display: inline-block;
+    width: 13%;
+    height: 100px;
+    text-align: center;
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>疯狂旅游--注册</title>
+<link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+<link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
+<script type="text/javascript" th:src="@{/resources/webjars/jquery/1.11.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<!-- 横幅 -->
+	<div>
+        <ul class="banner" style="margin-top: 10px;">
+            <li class="logo">
+                <a href="http://www.fkjava.org" >
+                    <img alt="疯狂软件" th:src="@{/resources/images/logo.png}" style="border-right: 1px solid rgba(0, 0, 0, 0.1);">
+                </a>
+            </li>
+            <li style="font-size: 20px;">
+                欢迎注册
+            </li>
+        </ul>
+	</div>
+    <div  class="container">
+        <div class="text-right">
+            已有账号？<a th:href="@{/security/login}" class="btn btn-default btn-sm">登录</a>
+        </div>
+        <div class="col-md-offset-1 col-md-10">
+            <div class="col-md-offset-3 col-md-6">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3" for="phoneNumber">
+                            手机号码
+                        </label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="phoneNumber" name="phoneNumber" placeholder="请输入手机号码" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3" for="validateCode">
+                            验证码
+                        </label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="validateCode" name="validateCode" placeholder="不区分大小写" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3" for="smsCode">
+                            短信校验码
+                        </label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="smsCode" name="smsCode" placeholder="请输入手机上收到的校验码" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-4">
+                            <button type="submit" class="btn btn-primary">注册</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

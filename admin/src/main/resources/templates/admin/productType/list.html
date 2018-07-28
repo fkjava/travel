@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>疯狂旅游</title>
+        <link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
+        <link rel="stylesheet" th:href="@{/resources/webjars/zTree/3.5.28/css/zTreeStyle/zTreeStyle.css}"/>
+
+        <script type="text/javascript" th:src="@{/resources/webjars/jquery/1.11.1/jquery.min.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+
+        <script type="text/javascript" th:src="@{/resources/webjars/zTree/3.5.28/js/jquery.ztree.all.js}"></script>
+        <style>
+            .menu
+            {
+                list-style: none;
+            }
+            .menu li
+            {
+                display: inline-block;
+            }
+            .ztree li span.button.add {
+                margin-left:2px;
+                margin-right: -1px;
+                background-position:-144px 0;
+                vertical-align:top;
+                *vertical-align:middle;
+            }
+            .tree-container
+            {
+                height: 300px;
+                border: 1px solid #ddd;
+                overflow: auto;
+            }
+        </style>
+    </head>
+    <body class="container-fluid">
+        <div class="row">
+            <ul class="col-md-12 menu">
+                <li><a th:href="@{/admin/productType}">产品类型管理</a></li>
+                <li><a th:href="@{/admin/product}">产品管理</a></li>
+                <li><a th:href="@{/admin/order}">订单管理</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4 tree-container">
+                    <ul id="typeTree" class="ztree"></ul>
+                </div>
+                <div class="col-md-8">
+
+                </div>
+            </div>
+        </div>
+        <script th:inline="javascript" type="text/javascript">
+            var zNodes = /*[# th:utext="${json}"]*/{}/*[/]*/;
+            //var zNodes = /*[[ ${json} ]]*/;
+        </script>
+        <script type="text/javascript">
+            // 树形结构处理
+
+            // 树形结构的扩展函数
+            var newNodeFlag = true;
+            var addHoverDom = function (treeId, treeNode) {
+                // 使用一个变量，判断是否可以现在下级节点，一个页面中，只能新增一次节点
+                // 当要新增下一个节点的时候，需要先保存前面新增的数据。保存以后自动刷新页面即可继续新增。
+                if (newNodeFlag) {
+                    var sObj = $("#" + treeNode.tId + "_span");
+                    if (
+                            // 正在编辑名称的时候，不能显示添加按钮
+                            treeNode.editNameFlag
+                            // 已经显示了添加按钮，不要再继续显示添加按钮
+                            || $("#addBtn_" + treeNode.tId).length > 0) {
+                        return;
+                    }
+                    var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                            + "' title='添加新的产品类型' onfocus='this.blur();'></span>";
+                    sObj.after(addStr);
+                    var btn = $("#addBtn_" + treeNode.tId);
+                    if (btn) {
+                        btn.bind("click", function () {
+                            // 设置为不能再显示新增按钮咯！
+                            newNodeFlag = false;
+                            var zTree = $.fn.zTree.getZTreeObj(treeId);
+                            // 新增一个节点
+                            var nodes = zTree.addNodes(treeNode, {pId: treeNode.id, name: "新产品类型"});
+                            // 删除新增按钮
+                            //$("#addBtn_" + treeNode.tId).unbind().remove();
+                            removeHoverDom(treeId, treeNode);
+
+                            // 选中新增的节点
+                            zTree.selectNode(nodes[0]);
+
+                            return false;
+                        });
+                    }
+                }
+            };
+            var removeHoverDom = function (treeId, treeNode) {
+                $("#addBtn_" + treeNode.tId).unbind().remove();
+            };
+
+
+            var beforeRemove = function (treeId, treeNode) {
+                var zTree = $.fn.zTree.getZTreeObj(treeId);
+                zTree.selectNode(treeNode);
+                var msg = "确认删除 产品类型 "
+                        + treeNode.name
+                        + " 吗？\n注意：如果类型有子类型，或者类型已经被使用不能删除！";
+                var flag = confirm(msg);
+                if (flag) {
+                    // 有id属性才需要到数据库去删除
+                    if (treeNode.id) {
+                        $.ajax({
+                            url: "[[@{/admin/productType/}]]" + treeNode.id,
+                            method: "delete",
+                            success: function (result) {
+
+                            },
+                            error: function (result) {
+
+                            }
+                        });
+                    }
+                }
+                return flag;
+            };
+            var onRemove = function (e, treeId, treeNode) {
+            };
+
+            // 树形结构的配置参数
+            var setting = {
+                view: {
+                    // 双击展开
+                    dblClickExpand: true,
+                    // 鼠标放到接点上，显示添加按钮，需要调用一个函数来显示添加按钮！
+                    addHoverDom: addHoverDom,
+                    // 删除添加按钮
+                    removeHoverDom: removeHoverDom,
+                    // 禁止多选
+                    selectedMulti: false
+                },
+                edit: {
+                    // 可编辑
+                    enable: true,
+                    // 显示删除按钮
+                    showRemoveBtn: true,
+                    // 不显示重命名按钮
+                    showRenameBtn: false
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                },
+                callback: {
+                    // 删除之前执行的回调，用于提示是否删除之类的
+                    beforeRemove: beforeRemove,
+                    // 当节点从树中被删除的时候调用，此时通常刷新树
+                    onRemove: onRemove
+                }
+            };
+            $(document).ready(function () {
+                $.fn.zTree.init($("#typeTree"), setting, zNodes);
+            });
+        </script>
+    </body>
+</html>
