@@ -2,6 +2,10 @@ if (typeof jQuery === 'undefined') {
     throw new Error('疯狂软件的commons.js必须依赖jQuery框架！');
 }
 
+if (typeof $.fn.modal === 'undefined') {
+    throw new Error('疯狂软件的commons.js必须依赖Bootstrap的Modal插件，请把Bootstrap框架和它的Modal插件引入到页面中！');
+}
+
 +function ($) {
     'use strict';
     var version = $.fn.jquery.split(' ')[0].split('.');
