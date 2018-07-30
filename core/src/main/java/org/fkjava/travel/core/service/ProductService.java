@@ -35,4 +35,6 @@ public interface ProductService {
     public List<ProductType> findSubTypes(String id);
 
     public Page<Product> findProducts(String typeId, Integer number, int pageSize);
+
+    public OperationResult deleteProductType(String id);
 }

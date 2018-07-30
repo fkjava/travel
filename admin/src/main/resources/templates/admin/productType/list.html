@@ -3,6 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <title>疯狂旅游</title>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
         <link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
         <link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
         <link rel="stylesheet" th:href="@{/resources/webjars/zTree/3.5.28/css/zTreeStyle/zTreeStyle.css}"/>
@@ -11,6 +13,8 @@
         <script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 
         <script type="text/javascript" th:src="@{/resources/webjars/zTree/3.5.28/js/jquery.ztree.all.js}"></script>
+
+        <script type="text/javascript" th:src="@{/resources/js/commons.js}"></script>
         <style>
             .menu
             {
@@ -30,6 +34,7 @@
             .tree-container
             {
                 height: 300px;
+                height: 400px;
                 border: 1px solid #ddd;
                 overflow: auto;
             }
@@ -45,11 +50,36 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="col-md-4 tree-container">
+                <div class="col-md-4 well tree-container">
                     <ul id="typeTree" class="ztree"></ul>
                 </div>
                 <div class="col-md-8">
-
+                    <form class="form-horizontal" method="post" id="typeForm" th:action="@{/admin/productType}">
+                        <div class="well tree-container">
+                            <div class="modal-header">
+                                <h4 class="modal-title">产品类型信息</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">上级类型名称</label>
+                                    <div class="col-sm-10">
+                                        <p class="parent-type-name form-control-static">无</p>
+                                        <input name="parent.id" type="hidden"/>
+                                        <input name="id" type="hidden"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputName" class="col-sm-2 control-label">类型名称</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="inputName" placeholder="类型名称" name="name"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -103,30 +133,62 @@
 
 
             var beforeRemove = function (treeId, treeNode) {
+
+                // 确定是否删除节点，如果确定删除，则把节点从数据库删除！
                 var zTree = $.fn.zTree.getZTreeObj(treeId);
                 zTree.selectNode(treeNode);
                 var msg = "确认删除 产品类型 "
                         + treeNode.name
-                        + " 吗？\n注意：如果类型有子类型，或者类型已经被使用不能删除！";
-                var flag = confirm(msg);
-                if (flag) {
-                    // 有id属性才需要到数据库去删除
-                    if (treeNode.id) {
-                        $.ajax({
-                            url: "[[@{/admin/productType/}]]" + treeNode.id,
-                            method: "delete",
-                            success: function (result) {
-
-                            },
-                            error: function (result) {
-
-                            }
-                        });
-                    }
-                }
-                return flag;
+                        + " 吗？<br/>注意：如果类型有子类型，或者类型已经被使用不能删除！";
+                fk.confirm(msg, function () {
+                    removeNode(treeId, treeNode);
+                });
+                return false;
             };
             var onRemove = function (e, treeId, treeNode) {
+            };
+
+            // 当按【确定】按钮以后，执行删除节点的操作
+            var removeNode = function (treeId, treeNode) {
+                // 有id属性才需要到数据库去删除
+                if (treeNode.id) {
+                    $.ajax({
+                        url: "[[@{/admin/productType/}]]" + treeNode.id,
+                        method: "delete",
+                        // 同步执行
+                        //async: false,
+                        success: function (result) {
+                            fk.alert(result.message, function () {
+                                if (result.succeed) {
+                                    // 服务端删除成功以后，在浏览器端也删除！
+                                    // 异步执行的时候，需要手动删除浏览器端的节点。
+                                    var zTree = $.fn.zTree.getZTreeObj(treeId);
+                                    zTree.removeNode(treeNode);
+                                }
+                            });
+                        },
+                        error: function (result) {
+                            fk.alert("删除失败：发送服务器故障");
+                        }
+                    });
+                }
+            };
+
+            // 当选中树的某个节点的时候执行的代码
+            // 用于把节点的参数放到右边窗口中
+            var nodeSelected = function (treeId, treeNode) {
+                // 获得上级节点
+                var parent = treeNode.getParentNode();
+                if (parent) {
+                    $("#typeForm input[name='parent.id']").val(parent.id);
+                    $("#typeForm .parent-type-name").text(parent.name);
+                } else {
+                    $("#typeForm input[name='parent.id']").val("");
+                    $("#typeForm .parent-type-name").text("无");
+                }
+
+                $("#typeForm input[name='name']").val(treeNode.name);
+                $("#typeForm input[name='id']").val(treeNode.id);
             };
 
             // 树形结构的配置参数
@@ -158,11 +220,13 @@
                     // 删除之前执行的回调，用于提示是否删除之类的
                     beforeRemove: beforeRemove,
                     // 当节点从树中被删除的时候调用，此时通常刷新树
-                    onRemove: onRemove
+                    onRemove: onRemove,
+                    onSelected: nodeSelected
                 }
             };
             $(document).ready(function () {
                 $.fn.zTree.init($("#typeTree"), setting, zNodes);
+                //fk.alert("吃一下");
             });
         </script>
     </body>

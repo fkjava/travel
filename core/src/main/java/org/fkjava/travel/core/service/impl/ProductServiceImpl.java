@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.fkjava.travel.core.service.ProductService;
 import org.fkjava.travel.core.vo.IndexPage;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -118,7 +118,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductType> findTopTypes() {
 
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Sort sort = Sort.by(Order.asc("orderNumber"));
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, sort);
         List<ProductType> topTypes //
                 = productTagDao.findByParentIsNull(pageable)//
                         .getContent();
@@ -140,5 +141,26 @@ public class ProductServiceImpl implements ProductService {
         ProductType parent = new ProductType();
         parent.setId(id);
         return this.productTagDao.findByParent(parent);
+    }
+
+    @Override
+    public OperationResult deleteProductType(String id) {
+        // 1.检查是否有下级类型
+        ProductType parent = new ProductType();
+        parent.setId(id);
+        List<ProductType> subTypes = this.productTagDao.findByParent(parent);
+        if (!subTypes.isEmpty()) {
+            // 有下级类型
+            return new OperationResult(false, "该产品类型有下级类型，不能删除");
+        }
+        // 2.检查类型是否被使用
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<Product> products = this.productDao.findByType(parent, pageable);
+        if (products.getTotalElements() > 0) {
+            return new OperationResult(false, "该产品类型已经有相关联的产品，不能删除");
+        }
+        // 3.删除产品类型
+        this.productTagDao.deleteById(id);
+        return new OperationResult(true, "删除成功");
     }
 }

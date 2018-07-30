@@ -3,13 +3,17 @@ package org.fkjava.travel.admin.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.fkjava.travel.commons.domain.OperationResult;
 import org.fkjava.travel.core.domain.ProductType;
 import org.fkjava.travel.core.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -48,5 +52,12 @@ public class ProductTypeController {
         this.productService.addType(type);
 
         return mav;
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    public OperationResult delete(@PathVariable("id") String id) {
+        OperationResult result = this.productService.deleteProductType(id);
+        return result;
     }
 }

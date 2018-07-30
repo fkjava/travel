@@ -24,6 +24,8 @@
         <script type="text/javascript" th:src="@{/resources/webjars/fullcalendar/3.9.0/dist/locale/zh-cn.js}"></script>
         <script type="text/javascript" th:src="@{/resources/webjars/smalot-bootstrap-datetimepicker/2.4.4/js/bootstrap-datetimepicker.min.js}"></script>
         <script type="text/javascript" th:src="@{/resources/webjars/smalot-bootstrap-datetimepicker/2.4.4/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+        <script type="text/javascript" th:src="@{/resources/js/commons.js}"></script>
         <style>
             .menu
             {
@@ -191,17 +193,6 @@
             var zNodes = /*[# th:utext="${json}"]*/{}/*[/]*/;
         </script>
         <script type="text/javascript">
-
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            var csrfToken = {};
-            csrfToken[header] = token;
-
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    xhr.setRequestHeader(header, token);
-                }
-            });
 
             var E = window.wangEditor;
 
