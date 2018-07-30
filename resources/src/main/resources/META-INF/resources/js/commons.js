@@ -1,3 +1,17 @@
+if (typeof jQuery === 'undefined') {
+    throw new Error('疯狂软件的commons.js必须依赖jQuery框架！');
+}
+
++function ($) {
+    'use strict';
+    var version = $.fn.jquery.split(' ')[0].split('.');
+    if ((version[0] < 2 && version[1] < 9)
+            || (parseInt(version[0]) === 1
+                    && parseInt(version[1]) === 9 && version[2] < 1)
+            || (version[0] > 3)) {
+        throw new Error('疯狂软件的commons.js必须依赖jQuery 1.9.1或更高！');
+    }
+}(jQuery);
 
 // 通用初始化函数
 $(function () {
