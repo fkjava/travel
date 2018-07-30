@@ -21,6 +21,11 @@ if (typeof $.fn.modal === 'undefined') {
 $(function () {
     // 处理AJAX的时候防止跨站攻击的问题，需要在HTML的head里面增加两个meta
     // 分别是_csrf和_csrf_header
+    /*
+     *   页面上需要增加类型下面两个meta：
+     *   <meta name="_csrf" th:content="${_csrf.token}"/>
+     *   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+     */
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     if (token && header) {
@@ -36,6 +41,12 @@ $(function () {
 });
 
 var fk = {};
+/**
+ * 用于代替alert函数的，使用的时候类似于：fk.alert("消息", function(){});
+ * @param {type} msg 提示的信息内容
+ * @param {type} callback 点击确定按钮以后的回调函数
+ * @returns {undefined}
+ */
 fk.alert = function (msg, callback) {
     if ($("#_fk_alert").length === 0) {
         // 插入新的HTML内容作为对话框
@@ -74,7 +85,13 @@ fk.alert = function (msg, callback) {
     $("#_fk_alert").modal();
 };
 
-
+/**
+ * 用于代替confirm函数的，使用的时候类似于：fk.comfirm("消息", function(){}, function(){});
+ * @param {type} msg 确认框的提示信息
+ * @param {type} yesCallback 点击确定按钮的时候调用的回调
+ * @param {type} noCallback 点击取消按钮的时候调用的回调
+ * @returns {undefined}
+ */
 fk.confirm = function (msg, yesCallback, noCallback) {
     if ($("#_fk_confirm").length === 0) {
         // 插入新的HTML内容作为对话框
@@ -118,6 +135,14 @@ fk.confirm = function (msg, yesCallback, noCallback) {
             noCallback();
             // 点击一次以后，取消点击事件绑定
             $("#_fk_confirm .modal-footer button.btn-default").unbind("click");
+        });
+
+        $("#_fk_confirm .modal-header button.close").bind("click", function () {
+            //console.log("取消按钮");
+            // 执行回调函数
+            noCallback();
+            // 点击一次以后，取消点击事件绑定
+            $("#_fk_confirm .modal-header button.close").unbind("click");
         });
     }
     // 显示对话框
