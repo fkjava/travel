@@ -18,6 +18,8 @@ if (typeof $.fn.modal === 'undefined') {
 }(jQuery);
 
 // 通用初始化函数
+
+var csrfToken = {};
 $(function () {
     // 处理AJAX的时候防止跨站攻击的问题，需要在HTML的head里面增加两个meta
     // 分别是_csrf和_csrf_header
@@ -29,7 +31,7 @@ $(function () {
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     if (token && header) {
-        var csrfToken = {};
+        //var csrfToken = {};
         csrfToken[header] = token;
 
         $.ajaxSetup({

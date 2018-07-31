@@ -8,7 +8,7 @@
         <link rel="stylesheet" th:href="@{/resources/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
         <link rel="stylesheet" th:href="@{/resources/css/fkjava.css}"/>
         <link rel="stylesheet" th:href="@{/resources/wangEditor/wangEditor.min.css}"/>
-        <link rel="stylesheet" th:href="@{/resources/ztree/css/zTreeStyle/zTreeStyle.css}"/>
+        <link rel="stylesheet" th:href="@{/resources/webjars/zTree/3.5.28/css/zTreeStyle/zTreeStyle.css}"/>
         <link rel="stylesheet" th:href="@{/resources/webjars/fullcalendar/3.9.0/dist/fullcalendar.min.css}"/>
         <link rel="stylesheet" th:href="@{/resources/webjars/fullcalendar/3.9.0/dist/fullcalendar.print.min.css}" media='print'/>
         <link rel="stylesheet" th:href="@{/resources/webjars/smalot-bootstrap-datetimepicker/2.4.4/css/bootstrap-datetimepicker.min.css}"/>
@@ -17,7 +17,7 @@
         <script type="text/javascript" th:src="@{/resources/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
         <script type="text/javascript" th:src="@{/resources/wangEditor/wangEditor.min.js}"></script>
         <script type="text/javascript" th:src="@{/resources/form-3.51/jquery.form.js}"></script>
-        <script type="text/javascript" th:src="@{/resources/ztree/js/jquery.ztree.all.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/webjars/zTree/3.5.28/js/jquery.ztree.all.js}"></script>
 
         <script type="text/javascript" th:src="@{/resources/webjars/moment/2.22.2/min/moment.min.js}"></script>
         <script type="text/javascript" th:src="@{/resources/webjars/fullcalendar/3.9.0/dist/fullcalendar.min.js}"></script>
@@ -232,42 +232,45 @@
                 // 创建富文本编辑器
                 editor.create();
             }
+            $(function () {
+                var featureEditor = createEditor("featureEditor", "feature");
+                var introduceEditor = createEditor("introduceEditor", "introduce");
+                var captionEditor = createEditor("captionEditor", "caption");
+                var noticeEditor = createEditor("noticeEditor", "notice");
 
-            var featureEditor = createEditor("featureEditor", "feature");
-            var introduceEditor = createEditor("introduceEditor", "introduce");
-            var captionEditor = createEditor("captionEditor", "caption");
-            var noticeEditor = createEditor("noticeEditor", "notice");
+                //$("#selectType").focus();
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-            //$("#selectType").focus();
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-
-            // 上传封面图片的逻辑处理
-            $("#uploadImage").on("change", function () {
-                $("#imageUploadForm").html("");
-                $("#uploadImage").clone().attr("name", "imgFile").appendTo($("#imageUploadForm"));
-                var options = {
-                    success: function (data, statusText) {
-                        if (data.status === 1)
-                        {
-                            var url = "[[@{/commons/file/}]]" + data.resourceId;
-                            var img = "<img src='" + url + "'/><input type='hidden' name='imageIds' value='" + data.resourceId + "'/>";
-                            $(img).appendTo($("#images"));
-                        } else {
-                            alert("图片上传失败");
-                        }
-                    },
-                    error: function (data) {
-                        alert("错误：" + data.responseText);
-                    },
-                    complete: function () {
-                        $("#uploadImage").val("");
-                    },
-                    dataType: 'json',
-                    url: "[[@{/commons/file}]]",
-                    type: "POST"
-                };
-                $("#imageUploadForm").ajaxSubmit(options);
+                // 上传封面图片的逻辑处理
+                $("#uploadImage").on("change", function () {
+                    $("#imageUploadForm").html("");
+                    $("#uploadImage").clone().attr("name", "imgFile").appendTo($("#imageUploadForm"));
+                    var options = {
+                        success: function (data, statusText) {
+                            if (data.status === 1)
+                            {
+                                var url = "[[@{/commons/file/}]]" + data.resourceId;
+                                var img = "<img src='" + url + "'/><input type='hidden' name='imageIds' value='" + data.resourceId + "'/>";
+                                $(img).appendTo($("#images"));
+                            } else {
+                                alert("图片上传失败");
+                            }
+                        },
+                        error: function (data) {
+                            alert("错误：" + data.responseText);
+                        },
+                        complete: function () {
+                            $("#uploadImage").val("");
+                        },
+                        dataType: 'json',
+                        url: "[[@{/commons/file}]]",
+                        type: "POST"
+                    };
+                    $("#imageUploadForm").ajaxSubmit(options);
+                });
             });
+
+
 
             // 树形结构处理
             var setting = {
